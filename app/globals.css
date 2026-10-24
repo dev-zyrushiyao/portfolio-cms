@@ -5,11 +5,41 @@
   --foreground: #171717;
 }
 
+@layer base {
+  h1 {
+    @apply lg:text-8xl text-6xl tracking-wide font-serif font-bold;
+  }
+
+  h2 {
+    @apply lg:text-7xl text-5xl tracking-wide font-serif font-semibold;
+  }
+
+  h3 {
+    @apply lg:text-6xl text-4xl tracking-wide font-serif font-semibold;
+  }
+
+  h4 {
+    @apply lg:text-5xl text-2xl tracking-wide font-serif font-semibold;
+  }
+
+  h5 {
+    @apply lg:text-4xl tracking-wide text-2xl font-serif font-semibold;
+  }
+
+  h6 {
+    @apply lg:text-3xl tracking-wide text-2xl font-serif font-semibold;
+  }
+
+  p {
+    @apply lg:text-xl md:text-lg text-sm font-sans;
+  }
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --font-sans: var(--font-google-sans-flex);
+  --font-serif: var(--font-lora-serif);
 }
 
 @media (prefers-color-scheme: dark) {
