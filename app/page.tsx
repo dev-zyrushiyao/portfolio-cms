@@ -13,7 +13,7 @@ export default function Home() {
         <div className="bg-red-500 w-full h-dvh flex flex-col justify-center items-center">
           <Logo />
         </div>
-        <div className="bg-green-400 w-1/2 flex flex-col justify-center items-center gap-10">
+        <div className="bg-white w-1/2 flex flex-col justify-center items-center gap-10">
           <h5>Zyrus Hiyao Portfolio CMS</h5>
           <button
             className="border p-3 bg-white rounded-sm cursor-pointer"
@@ -27,7 +27,6 @@ export default function Home() {
               </span>
             </div>
           </button>
-          {/* <Auth supabaseClient={supabase} /> */}
         </div>
       </div>
     </div>

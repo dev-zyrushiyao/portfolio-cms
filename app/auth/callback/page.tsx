@@ -8,7 +8,26 @@ export default function AuthCallbackPage() {
   const router = useRouter();
 
   useEffect(() => {
-    // Supabase client automatically parses the hash fragment (#access_token=...)
+    // 1. Check if Supabase sent an error back in the URL (search or hash)
+    const searchParams = new URLSearchParams(window.location.search);
+    const hashParams = new URLSearchParams(
+      window.location.hash.replace("#", "?"),
+    );
+
+    const errorCode = searchParams.get("error") || hashParams.get("error");
+
+    if (errorCode) {
+      const targetUrl = `${window.location.origin}/?error=${errorCode}`;
+      if (window.opener) {
+        window.opener.location.href = targetUrl;
+        window.close();
+      } else {
+        router.push(`/?error=${errorCode}`);
+      }
+      return;
+    }
+
+    // 2. Otherwise, handle normal session parsing
     supabase.auth.getSession().then(async ({ data: { session } }) => {
       const targetUrl = `${window.location.origin}/dashboard`;
 
@@ -16,25 +35,22 @@ export default function AuthCallbackPage() {
         const userEmail = session.user.email;
         const allowedEmail = "zyrushiyao@gmail.com";
 
-        // If it's not you, sign them out immediately
         if (userEmail !== allowedEmail) {
           await supabase.auth.signOut();
-          const targetUrl = `${window.location.origin}/?error=unauthorized`;
+          const unauthorizedUrl = `${window.location.origin}/?error=unauthorized`;
           if (window.opener) {
-            window.opener.location.href = targetUrl;
+            window.opener.location.href = unauthorizedUrl;
             window.close();
           } else {
             router.push("/?error=unauthorized");
           }
           return;
         }
+
         if (window.opener) {
-          // Send success event to parent window and close popup
           window.opener.location.href = targetUrl;
           window.close();
         } else {
-          // If loaded in main window instead of popup, redirect home
-          //   window.location.href = "/";
           router.push("/dashboard");
         }
       }

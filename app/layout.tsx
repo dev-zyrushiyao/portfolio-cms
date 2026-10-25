@@ -19,6 +19,10 @@ const googleSansFlex = Google_Sans_Flex({
 export const metadata: Metadata = {
   title: "Portfolio CMS",
   description: "Zyrus Hiyao Portfolio Content Management System",
+  robots: {
+    index: false,
+    follow: false,
+  },
 };
 
 export default function RootLayout({ children }: LayoutProps<"/">) {
