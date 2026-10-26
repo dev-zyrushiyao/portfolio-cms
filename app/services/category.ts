@@ -18,7 +18,7 @@ export default async function getCategories(): Promise<CategoryProp[] | []> {
 }
 
 export function convertDate(date: string): string {
-  if (!date) return;
+  if (!date) return "NO DATE FOUND";
 
   const formattedDate = new Date(date).toLocaleDateString("en-US", {
     year: "numeric",

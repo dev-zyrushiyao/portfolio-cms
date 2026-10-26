@@ -14,6 +14,7 @@ import getContacts, {
   ContactProp,
   updateContactRead,
 } from "../services/contact";
+import ActionMenu from "../components/ui/ActionMenu";
 
 export default function Dashboard() {
   const router = useRouter();
@@ -136,28 +137,7 @@ export default function Dashboard() {
       <Navbar loggedUser={loggedUser} />
       <div ref={container} className="wrapper flex flex-row p-5 gap-20">
         <div className="left-wrapper w-100 h-fit bg-gray-200 rounded-xl ">
-          <div className="left-content w-fit p-2">
-            <h5>Action Menu</h5>
-            <div className="action-list p-5">
-              <ul className="flex flex-col gap-2">
-                <li className="">
-                  <Link href={"/"}>
-                    <p>Add Blog</p>
-                  </Link>
-                </li>
-                <li>
-                  <Link href={"/"}>
-                    <p>Add Files</p>
-                  </Link>
-                </li>
-                <li>
-                  <Link href={"/"}>
-                    <p>Add Projects</p>
-                  </Link>
-                </li>
-              </ul>
-            </div>
-          </div>
+          <ActionMenu />
         </div>
         <div className="right-wrapper w-full border">
           <div className="right-content w-full">
@@ -246,7 +226,13 @@ export default function Dashboard() {
                         From: {selectedContact.sender_name}
                       </p>
                       <p className="text-sm">
-                        Email: {selectedContact.sender_email}
+                        Email:{" "}
+                        <a
+                          href={`mailto:${selectedContact.sender_email}`}
+                          target="_blank"
+                        >
+                          {selectedContact.sender_email}
+                        </a>
                       </p>
                       <p className="text-sm">
                         Date: {convertDate(selectedContact.created_at)}

@@ -33,6 +33,10 @@
   p {
     @apply lg:text-xl md:text-lg text-sm font-sans;
   }
+
+  label {
+    @apply text-xl;
+  }
 }
 
 @theme inline {

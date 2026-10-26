@@ -4,6 +4,9 @@ const nextConfig: NextConfig = {
   /* config options here */
   experimental: {
     agentFeedback: true,
+    serverActions: {
+      bodySizeLimit: "10mb", // Adjust file size upload
+    },
   },
   cacheComponents: true,
   partialPrefetching: true,
@@ -23,7 +26,6 @@ const nextConfig: NextConfig = {
       },
     ],
   },
-  
 };
 
 export default nextConfig;

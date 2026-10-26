@@ -1,9 +1,7 @@
 "use client";
 
-import { Auth } from "@supabase/auth-ui-react";
 import Logo from "./components/svg/Logo";
 import { handleGoogleLogin } from "./auth/auth";
-import supabase from "./services/supabase";
 import { FcGoogle } from "react-icons/fc";
 
 export default function Home() {
