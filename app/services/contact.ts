@@ -1,4 +1,4 @@
-import supabase from "./supabase";
+import supabase from "./client";
 
 export interface ContactProp {
   id: number;

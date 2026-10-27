@@ -1,4 +1,5 @@
-import { createClient } from "@supabase/supabase-js";
+import { createBrowserClient } from "@supabase/ssr";
+
 
 // Create a single supabase client for interacting with your database
 const url = process.env.NEXT_PUBLIC_SUPABASE_URL;
@@ -8,5 +9,5 @@ if (!url || !key) {
   throw new Error("Missing Supabase environment variables in .env.local");
 }
 
-const supabase = createClient(url, key);
-export default supabase;
+const supabaseClient = createBrowserClient(url, key);
+export default supabaseClient;

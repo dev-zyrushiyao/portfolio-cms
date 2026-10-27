@@ -9,17 +9,17 @@ export default function ActionMenu() {
         <ul className="flex flex-col gap-2">
           <li className="">
             <Link href={"/blog"}>
-              <p>Add Blog</p>
+              <p>View Blog</p>
             </Link>
           </li>
           <li>
             <Link href={"/files"}>
-              <p>Add Files</p>
+              <p>View Files</p>
             </Link>
           </li>
           <li>
             <Link href={"/projects"}>
-              <p>Add Projects</p>
+              <p>View Projects</p>
             </Link>
           </li>
           <li>

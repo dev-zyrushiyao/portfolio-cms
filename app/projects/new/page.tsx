@@ -4,20 +4,20 @@ import Link from "next/link";
 import React, { useActionState, useEffect, useState } from "react";
 import { MdOutlineArrowBackIosNew } from "react-icons/md";
 
-import { getStorageImage, TechstackProp } from "../services/storage";
-import { addProject } from "../services/project";
-import { TagProp } from "../services/project";
+import { getStorageImage, TechstackProp } from "../../services/storage";
+import { createProject } from "../../services/project";
+import { TagProp } from "../../services/project";
 import { toast } from "sonner";
 
 const projectLink: string = "zyrushiyao-portfolio/projects";
 
-export default function Blog() {
+export default function NewProject() {
   const [techstackImages, setTechstackImages] = useState<
     TechstackProp[] | null
   >(null);
 
   //initial value is false
-  const [state, formAction] = useActionState(addProject, null);
+  const [state, formAction] = useActionState(createProject, null);
 
   useEffect(() => {
     //fetch techstack for checkbox data
@@ -45,12 +45,12 @@ export default function Blog() {
 
   return (
     <div className="flex flex-col gap-10 p-20">
-      <Link href={"/dashboard"}>
+      <Link href={"/projects"}>
         <div className="flex flex-row items-center gap-3">
           <span>
             <MdOutlineArrowBackIosNew />
           </span>
-          <h6>Back</h6>
+          <h6>New Project</h6>
         </div>
       </Link>
       <h5>Add Project</h5>
@@ -131,7 +131,7 @@ export default function Blog() {
             })}
           </div>
         </div>
-        <div className="url-file-divider flex flex-row gap-5">
+        <div className="url-file-divider flex lg:flex-row flex-col gap-5">
           <div className="url-wrapper flex flex-col w-full">
             <div className="flex flex-col">
               <label htmlFor="demo-label" className="text-xl">
@@ -183,15 +183,15 @@ export default function Blog() {
             </div>
           </div>
           <div className="file-wrapper w-full">
-            <div className="h-full bg-gray-200 flex flex-col justify-center items-center gap-5">
+            <div className="lg:h-full h-50 bg-gray-200 flex flex-col justify-center items-center gap-5">
               <label>Project Photo</label>
-              <div className="flex flex-col">
+              <div className="flex flex-col text-center">
                 <input
                   required
                   name="image_url"
                   type="file"
                   accept="image/png"
-                  className="file:rounded-xs file:mr-4 file:py-2 file:px-4 file:border file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
+                  className="file:rounded-xs file:flex file:flex-col file:w-full  file:mr-4 file:py-2 file:px-4 file:border file:bg-gray-100 file:text-gray-700 hover:file:bg-gray-200"
                 />
               </div>
             </div>
@@ -207,7 +207,7 @@ export default function Blog() {
             });
           }}
         >
-          Add Project
+          Create new Project
         </button>
       </form>
     </div>

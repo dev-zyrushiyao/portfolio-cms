@@ -2,10 +2,9 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import supabase from "../services/supabase";
+import supabase from "../services/client";
 import { User } from "@supabase/supabase-js";
 import Navbar from "../components/ui/Navbar";
-import Link from "next/link";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
@@ -22,12 +21,12 @@ export default function Dashboard() {
 
   //fetched data
   const [loggedUser, setLoggedUser] = useState<User | null>(null);
-  const [categories, setCategories] = useState<CategoryProp[]>([]);
-  const [contact, setContact] = useState<ContactProp[]>([]);
+  const [categoriesData, setCategoriesData] = useState<CategoryProp[]>([]);
+  const [contactData, setContactData] = useState<ContactProp[]>([]);
 
   //currentState
   const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
-  const filteredContacts = contact.filter(
+  const filteredContacts = contactData.filter(
     (cont) => cont.category_id === selectedCategory,
   );
   const [selectedContact, setSelectedContact] = useState<ContactProp | null>(
@@ -45,15 +44,15 @@ export default function Dashboard() {
       }
     });
 
-    async function fetchData(): Promise<void> {
-      const categoriesData = await getCategories();
-      setCategories(categoriesData);
+    async function fetchCategories(): Promise<void> {
+      const data = await getCategories();
+      setCategoriesData(data);
     }
-    fetchData();
+    fetchCategories();
 
     async function fetchContact(): Promise<void> {
-      const contactData = await getContacts();
-      setContact(contactData);
+      const data = await getContacts();
+      setContactData(data);
     }
     fetchContact();
   }, [router]);
@@ -120,7 +119,7 @@ export default function Dashboard() {
     await updateContactRead(selectedContact.id, selectedContact.read);
 
     //updates the state of contact (FilteredContact)
-    setContact((prevContacts) =>
+    setContactData((prevContacts) =>
       prevContacts.map((c) =>
         c.id === selectedContact.id ? { ...c, read: newReadStatus } : c,
       ),
@@ -154,8 +153,8 @@ export default function Dashboard() {
                 <option value="" disabled>
                   Select a categories
                 </option>
-                {categories &&
-                  categories?.map((cat) => {
+                {categoriesData &&
+                  categoriesData?.map((cat) => {
                     return (
                       <option key={cat.id} value={cat.id}>
                         {cat.category_type}
@@ -216,7 +215,7 @@ export default function Dashboard() {
                         Category:
                         <span>
                           {
-                            categories.find((cat) => {
+                            categoriesData.find((cat) => {
                               return cat.id === selectedContact.category_id;
                             })?.category_type
                           }

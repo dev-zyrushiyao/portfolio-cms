@@ -1,4 +1,4 @@
-import supabase from "./supabase";
+import supabase from "./client";
 
 export async function addTechstack(
   imagePath: string,
