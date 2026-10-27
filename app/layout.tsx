@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Google_Sans_Flex, Lora } from "next/font/google";
 import "./globals.css";
+import { Toaster } from "sonner";
 
 const lora = Lora({
   variable: "--font-lora-serif",
@@ -31,7 +32,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${googleSansFlex.variable} ${lora.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {children}
+        <Toaster richColors />
+      </body>
     </html>
   );
 }

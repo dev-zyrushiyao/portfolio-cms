@@ -1,30 +1,51 @@
 "use client";
 
 import Link from "next/link";
-import React, { useEffect, useState } from "react";
+import React, { useActionState, useEffect, useState } from "react";
 import { MdOutlineArrowBackIosNew } from "react-icons/md";
 
 import { getStorageImage, TechstackProp } from "../services/storage";
 import { addProject } from "../services/project";
 import { TagProp } from "../services/project";
+import { toast } from "sonner";
+
+const projectLink: string = "zyrushiyao-portfolio/projects";
 
 export default function Blog() {
   const [techstackImages, setTechstackImages] = useState<
     TechstackProp[] | null
   >(null);
 
+  //initial value is false
+  const [state, formAction] = useActionState(addProject, null);
+
   useEffect(() => {
+    //fetch techstack for checkbox data
     async function fetchImages() {
       const data = await getStorageImage();
       setTechstackImages(data);
     }
-
     fetchImages();
-  }, []);
+
+    if (state?.success) {
+      toast.success(state.message, {
+        action: {
+          label: "view",
+          onClick() {
+            window.open(projectLink, "_blank");
+          },
+        },
+      });
+      toast.dismiss("loading-toast");
+    } else if (state?.success === false) {
+      toast.error(`${state.message}`);
+      toast.dismiss("loading-toast");
+    }
+  }, [state]);
 
   return (
     <div className="flex flex-col gap-10 p-20">
-      <Link href={"/"}>
+      <Link href={"/dashboard"}>
         <div className="flex flex-row items-center gap-3">
           <span>
             <MdOutlineArrowBackIosNew />
@@ -33,12 +54,21 @@ export default function Blog() {
         </div>
       </Link>
       <h5>Add Project</h5>
-      <form action={addProject} className="flex flex-col gap-5">
+      <form
+        action={formAction}
+        onSubmit={(e) => {
+          if (!window.confirm("Are you sure you want to add this project?")) {
+            e.preventDefault(); // Stops the form from submitting
+          }
+        }}
+        className="flex flex-col gap-5"
+      >
         <div className="flex flex-col">
           <label htmlFor="title-label" className="text-xl">
             Title:
           </label>
           <input
+            required
             maxLength={40}
             type="text"
             name="title"
@@ -52,6 +82,7 @@ export default function Blog() {
           </label>
 
           <textarea
+            required
             className="h-50 border border-gray-300 rounded-sm p-3 text-base"
             name="description_desktop"
             id="description-desktop-label"
@@ -67,6 +98,7 @@ export default function Blog() {
           </label>
 
           <textarea
+            required
             className="h-30 border border-gray-300 rounded-sm p-3 text-base"
             name="description_mobile"
             id="description-mobile-label"
@@ -165,7 +197,16 @@ export default function Blog() {
             </div>
           </div>
         </div>
-        <button type="submit" className="bg-yellow-200 p-5 border rounded-xl">
+        <button
+          type="submit"
+          className="bg-yellow-200 p-5 border rounded-xl"
+          onClick={() => {
+            toast.loading("Loading…", {
+              id: "loading-toast",
+              className: "!bg-gray-100 !border-2 !border-gray-300",
+            });
+          }}
+        >
           Add Project
         </button>
       </form>
