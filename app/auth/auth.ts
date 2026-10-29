@@ -1,4 +1,4 @@
-import supabase from "../services/client";
+import supabase from "../services/supabase/client";
 
 //Google Authentication (OAuth) https://console.cloud.google.com/
 //set up supabase in your VS code project

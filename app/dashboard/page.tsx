@@ -2,18 +2,19 @@
 
 import React, { useEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import supabase from "../services/client";
+import supabase from "../services/supabase/client";
 import { User } from "@supabase/supabase-js";
 import Navbar from "../components/ui/Navbar";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
-import getCategories, { CategoryProp, convertDate } from "../services/category";
+import getCategories, { CategoryProp } from "../services/category";
 import getContacts, {
   ContactProp,
   updateContactRead,
 } from "../services/contact";
 import ActionMenu from "../components/ui/ActionMenu";
+import { convertDate } from "../services/utils";
 
 export default function Dashboard() {
   const router = useRouter();

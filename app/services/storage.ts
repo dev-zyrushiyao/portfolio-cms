@@ -1,6 +1,6 @@
 "use server";
 
-import { createClient } from "./server";
+import { createClient } from "./supabase/server";
 
 export interface TechstackProp {
   fileName: string;
@@ -8,8 +8,8 @@ export interface TechstackProp {
   url: string;
 }
 
-//fetch techstack
-export async function getStorageImage() {
+//fetch techstack info and put it on checkbox
+export async function getStorageTechstackImageInfo() {
   const supabaseServer = await createClient();
   //Select Storage bucket
   //Create new policy - from the scratch

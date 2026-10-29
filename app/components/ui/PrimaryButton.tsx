@@ -1,5 +1,3 @@
-import React, { useEffect } from "react";
-
 export default function PrimaryButton({
   label,
   onClick,
@@ -11,7 +9,7 @@ export default function PrimaryButton({
 
   return (
     <button
-      className="bg-amber-300 p-1 w-[10vw] rounded-2xl cursor-pointer"
+      className="bg-amber-300 p-1 lg:w-[10vw] w-[30vw] h-10 rounded-2xl cursor-pointer"
       onClick={onClick}
     >
       {label}

@@ -4,7 +4,10 @@ import Link from "next/link";
 import React, { useActionState, useEffect, useState } from "react";
 import { MdOutlineArrowBackIosNew } from "react-icons/md";
 
-import { getStorageImage, TechstackProp } from "../../services/storage";
+import {
+  getStorageTechstackImageInfo,
+  TechstackProp,
+} from "../../services/storage";
 import { createProject } from "../../services/project";
 import { TagProp } from "../../services/project";
 import { toast } from "sonner";
@@ -12,9 +15,7 @@ import { toast } from "sonner";
 const projectLink: string = "zyrushiyao-portfolio/projects";
 
 export default function NewProject() {
-  const [techstackImages, setTechstackImages] = useState<
-    TechstackProp[] | null
-  >(null);
+  const [techstack, setTechstack] = useState<TechstackProp[] | null>(null);
 
   //initial value is false
   const [state, formAction] = useActionState(createProject, null);
@@ -22,8 +23,8 @@ export default function NewProject() {
   useEffect(() => {
     //fetch techstack for checkbox data
     async function fetchImages() {
-      const data = await getStorageImage();
-      setTechstackImages(data);
+      const data = await getStorageTechstackImageInfo();
+      setTechstack(data);
     }
     fetchImages();
 
@@ -111,7 +112,7 @@ export default function NewProject() {
         <div className="flex flex-col">
           <label className="text-xl">Techstack</label>
           <div className="ts-wrapper h-50 flex flex-col flex-wrap">
-            {techstackImages?.map((ts) => {
+            {techstack?.map((ts) => {
               return (
                 <div key={ts.originalName} className="flex flex-row gap-2">
                   <input

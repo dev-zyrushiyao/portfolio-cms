@@ -1,4 +1,4 @@
-import supabase from "./client";
+import supabase from "./supabase/client";
 
 export interface CategoryProp {
   id: number;
@@ -17,17 +17,3 @@ export default async function getCategories(): Promise<CategoryProp[] | []> {
   return (data as CategoryProp[]) || [];
 }
 
-export function convertDate(date: string): string {
-  if (!date) return "NO DATE FOUND";
-
-  const formattedDate = new Date(date).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-    hour: "numeric",
-    minute: "2-digit",
-    hour12: true,
-  });
-
-  return formattedDate;
-}
