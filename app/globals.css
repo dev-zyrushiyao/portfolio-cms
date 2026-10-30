@@ -37,6 +37,10 @@
   label {
     @apply text-xl;
   }
+
+  input[type="text"] {
+    @apply border border-gray-300 rounded-sm p-3 text-base;
+  }
 }
 
 @theme inline {

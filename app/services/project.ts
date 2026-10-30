@@ -1,12 +1,11 @@
 "use server";
 
 import { createClient } from "./supabase/server";
-import { uploadImageToStorage } from "./storage";
+import { uploadProjectImageToStorage } from "./storage";
 // import supabase from "./client";
 import { revalidatePath } from "next/cache";
 import supabase from "./supabase/client";
 import { slugify } from "./utils";
-import { Project } from "next/dist/build/swc/types";
 
 export type TagProp = { name: string; icon_url: string };
 export type FormState = { success: boolean; message: string } | null; //state is return value from function and used by useActionState of form via Sonner Toast
@@ -58,7 +57,7 @@ export async function createProject(prevState: FormState, formData: FormData) {
   }
 
   //upload image to storage that returns a image URL to be uploaded in the Database
-  const image_url = await uploadImageToStorage(image_file);
+  const image_url = await uploadProjectImageToStorage(image_file);
 
   //unpacks the JSON value from the checkbox
   const unpackedTags: TagProp[] = tags.map((t) => JSON.parse(t));
@@ -170,7 +169,7 @@ export async function updateProject(prevState: FormState, formData: FormData) {
       } as FormState;
     }
     //upload image to storage that returns a image URL to be uploaded in the Database
-    image_url = await uploadImageToStorage(image_file);
+    image_url = await uploadProjectImageToStorage(image_file);
   }
 
   //unpacks the JSON value from the checkbox

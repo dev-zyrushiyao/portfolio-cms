@@ -1,12 +1,15 @@
 "use server";
 
 import { createClient } from "./supabase/server";
+import { v4 as uuidv4 } from "uuid";
 
 export interface TechstackProp {
   fileName: string;
   originalName: string;
   url: string;
 }
+
+const allowedTypes = ["image/png", "image/jpg", "image/webp"];
 
 //fetch techstack info and put it on checkbox
 export async function getStorageTechstackImageInfo() {
@@ -42,15 +45,33 @@ export async function getStorageTechstackImageInfo() {
 }
 
 //upload to project-images
-export async function uploadImageToStorage(file: File) {
+export async function uploadProjectImageToStorage(file: File) {
   const supabaseServer = await createClient();
+  const projectImages: string = "project-images";
+
+  //file type checker - only accept png
+  if (file.type !== "image/png") {
+    throw new Error("Unsupported file type");
+  }
+
+  //file size maximum checker
+  const MAX_FILE_SIZE = 10 * 1024 * 1024;
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error("Image must not exceed 10 MB.");
+  }
+
+  //file size mininum checker
+  if (file.size === 0) {
+    throw new Error("The uploaded file is empty.");
+  }
 
   //saves policy storage insert
   //allow authenticated users only
-  const fileName = `${Date.now()}-${file.name}`;
+  const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, "-");
+  const fileName = `${uuidv4()}-${sanitizedName}`;
 
   const { error } = await supabaseServer.storage
-    .from("project-images")
+    .from(projectImages)
     .upload(fileName, file);
 
   if (error) {
@@ -59,7 +80,48 @@ export async function uploadImageToStorage(file: File) {
   }
 
   const { data: fileData } = await supabaseServer.storage
-    .from("project-images")
+    .from(projectImages)
+    .getPublicUrl(fileName);
+
+  console.log("URL", fileData.publicUrl);
+
+  return fileData.publicUrl;
+}
+
+export async function uploadBlogMediaToStorage(file: File) {
+  const supabaseServer = await createClient();
+  const blogImages: string = "blog-images";
+
+  //file type checker - accepts png and mp4
+  if (!allowedTypes.includes(file.type)) {
+    throw new Error("Unsupported media format");
+  }
+
+  //file size maximum checker
+  const MAX_FILE_SIZE = 10 * 1024 * 1024;
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error("Image must not exceed 10 MB.");
+  }
+
+  //file size mininum checker
+  if (file.size === 0) {
+    throw new Error("The uploaded file is empty.");
+  }
+
+  const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, "-");
+  const fileName = `${uuidv4()}-${sanitizedName}`;
+
+  const { error } = await supabaseServer.storage
+    .from(blogImages)
+    .upload(fileName, file);
+
+  if (error) {
+    console.error("Error uploading image:", error.message);
+    throw new Error(`Error uploading image ${error.message}`);
+  }
+
+  const { data: fileData } = await supabaseServer.storage
+    .from(blogImages)
     .getPublicUrl(fileName);
 
   console.log("URL", fileData.publicUrl);
