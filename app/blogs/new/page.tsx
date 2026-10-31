@@ -3,13 +3,14 @@
 import { uploadBlogMediaToStorage } from "@/app/services/storage";
 import dynamic from "next/dynamic";
 import Link from "next/link";
-import React, { useRef, useState } from "react";
+import React, { useActionState, useEffect, useRef, useState } from "react";
 import type ReactQuillInstance from "react-quill-new";
 import { MdOutlineArrowBackIosNew } from "react-icons/md";
 import { postBlog } from "@/app/services/blog";
 
 import "react-quill-new/dist/quill.snow.css";
 import PrimaryButton from "@/app/components/ui/PrimaryButton";
+import { toast } from "sonner";
 
 // Import Quill dynamically with SSR turned off
 const ReactQuill = dynamic(() => import("react-quill-new"), {
@@ -79,9 +80,28 @@ export default function NewBlog() {
     };
   }
 
+  const [state, formAction] = useActionState(postBlog, null);
+  useEffect(() => {
+    const blogLink: string = `zyrushiyao-portfolio/blogs/`;
+    if (state?.success) {
+      toast.success(state.message, {
+        action: {
+          label: "view",
+          onClick() {
+            window.open(blogLink, "_blank");
+          },
+        },
+      });
+      toast.dismiss("loading-toast");
+    } else if (state?.success === false) {
+      toast.error(`${state.message}`);
+      toast.dismiss("loading-toast");
+    }
+  }, [state]);
+
   return (
     <div className="flex flex-col gap-10 p-20">
-      <Link href={"/dashboard"}>
+      <Link href={"/blogs"}>
         <div className="flex flex-row items-center gap-3">
           <span>
             <MdOutlineArrowBackIosNew />
@@ -90,8 +110,13 @@ export default function NewBlog() {
         </div>
       </Link>
       <form
-        action={postBlog}
-        onSubmit={() => {
+        action={formAction}
+        onSubmit={(e) => {
+          if (!window.confirm("Are you sure you want to add this project?")) {
+            e.preventDefault(); // Stops the form from submitting
+          }
+
+          //reset the editor
           const editor = quillRef.current?.getEditor();
           editor?.setText("");
         }}
@@ -101,7 +126,7 @@ export default function NewBlog() {
           <label htmlFor="title-input">Title:</label>
           <input type="text" id="title-input" name="title" maxLength={50} />
         </div>
-        <div className="flex flex-col gap-1">
+        <div className="gap-1 hidden">
           <label htmlFor="context-input">Context:</label>
           <input
             type="text"
@@ -127,7 +152,15 @@ export default function NewBlog() {
         </div>
 
         <div className="flex flex-row justify-end">
-          <PrimaryButton label="Post blog" />
+          <PrimaryButton
+            label="Post blog"
+            onClick={() => {
+              toast.loading("Loading…", {
+                id: "loading-toast",
+                className: "!bg-gray-100 !border-2 !border-gray-300",
+              });
+            }}
+          />
         </div>
       </form>
     </div>

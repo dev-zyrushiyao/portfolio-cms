@@ -9,7 +9,7 @@ export default function AuthCallbackPage() {
 
   useEffect(() => {
     async function handleCallback() {
-      // 1. Check if Supabase sent an error back in the URL (search or hash)
+      //Check if Supabase sent an error back in the URL (search or hash)
       const searchParams = new URLSearchParams(window.location.search);
       const hashParams = new URLSearchParams(
         window.location.hash.replace("#", "?"),
@@ -33,7 +33,7 @@ export default function AuthCallbackPage() {
         await supabase.auth.exchangeCodeForSession(code);
       }
 
-      // 2. Otherwise, handle normal session parsing
+      //Otherwise, handle normal session parsing
       supabase.auth.getSession().then(async ({ data: { session } }) => {
         const targetUrl = `${window.location.origin}/dashboard`;
 

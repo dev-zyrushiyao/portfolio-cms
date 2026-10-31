@@ -3,10 +3,7 @@
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
 import { MdOutlineArrowBackIosNew } from "react-icons/md";
-import {
-  getAllProjects,
-  ProjectProp,
-} from "../services/project";
+import { getAllProjects, ProjectProp } from "../services/project";
 import { MdEdit } from "react-icons/md";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";

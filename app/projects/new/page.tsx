@@ -12,9 +12,8 @@ import { createProject } from "../../services/project";
 import { TagProp } from "../../services/project";
 import { toast } from "sonner";
 
-const projectLink: string = "zyrushiyao-portfolio/projects";
-
 export default function NewProject() {
+  const projectLink: string = "zyrushiyao-portfolio/projects";
   const [techstack, setTechstack] = useState<TechstackProp[] | null>(null);
 
   //initial value is false

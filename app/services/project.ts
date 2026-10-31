@@ -120,7 +120,10 @@ export async function getProjectById(id: string): Promise<ProjectProp> {
   return data as ProjectProp;
 }
 
-export async function updateProject(prevState: FormState, formData: FormData) {
+export async function updateProject(
+  prevState: FormState,
+  formData: FormData,
+): Promise<FormState> {
   const supabaseServer = await createClient();
 
   const id = formData.get("id"); // hidden
