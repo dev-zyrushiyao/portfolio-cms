@@ -8,7 +8,7 @@ export default function ActionMenu() {
       <div className="action-list p-5">
         <ul className="flex flex-col gap-2">
           <li className="">
-            <Link href={"/blog"}>
+            <Link href={"/blogs"}>
               <p>View Blog</p>
             </Link>
           </li>
@@ -23,8 +23,8 @@ export default function ActionMenu() {
             </Link>
           </li>
           <li>
-            <Link href={"/techstack"}>
-              <p>Add Techstack</p>
+            <Link href={"/techstacks"}>
+              <p>View Techstack</p>
             </Link>
           </li>
         </ul>

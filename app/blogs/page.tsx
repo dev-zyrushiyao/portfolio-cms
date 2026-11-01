@@ -135,7 +135,7 @@ export default function Blogs() {
               </div>
             </div>
 
-            <Link href={"/blog/new"}>
+            <Link href={"/blogs/new"}>
               <PrimaryButton label="Add Blog" />
             </Link>
           </div>
@@ -152,7 +152,7 @@ export default function Blogs() {
               >
                 {blog.title}
                 <div className="action-wrapper flex flex-row gap-20">
-                  <Link href={`/blog/edit/${blog.id}`}>
+                  <Link href={`/blogs/edit/${blog.id}`}>
                     <span className="icon flex flex-row items-center gap-5">
                       <MdEdit /> Edit
                     </span>

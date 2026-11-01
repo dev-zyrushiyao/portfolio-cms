@@ -4,13 +4,11 @@ import { uploadBlogMediaToStorage } from "@/app/services/storage";
 import dynamic from "next/dynamic";
 import Link from "next/link";
 import React, { useActionState, useEffect, useRef, useState } from "react";
-import type ReactQuillInstance from "react-quill-new";
 import { MdOutlineArrowBackIosNew } from "react-icons/md";
 import { postBlog } from "@/app/services/blog";
-
-import "react-quill-new/dist/quill.snow.css";
 import PrimaryButton from "@/app/components/ui/PrimaryButton";
 import { toast } from "sonner";
+import type ReactQuillInstance from "react-quill-new";
 
 // Import Quill dynamically with SSR turned off
 const ReactQuill = dynamic(() => import("react-quill-new"), {
