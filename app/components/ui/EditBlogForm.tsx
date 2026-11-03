@@ -164,6 +164,7 @@ export default function EditBlogForm({ blog }: EditBlogFormProps) {
 
       <div className="flex flex-row justify-end">
         <PrimaryButton
+          type="submit"
           label="Update blog"
           onClick={() => {
             toast.loading("Loading…", {

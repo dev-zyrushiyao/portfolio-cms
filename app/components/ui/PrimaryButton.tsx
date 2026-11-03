@@ -4,6 +4,7 @@ export default function PrimaryButton({
 }: {
   label: string;
   onClick?: () => void;
+  type: "button" | "submit";
 }) {
   //   useEffect(() => {}, [label]);
 

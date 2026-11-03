@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono, Google_Sans_Flex, Lora } from "next/font/google";
+import { Google_Sans_Flex, Lora } from "next/font/google";
 import "./globals.css";
+import "react-quill-new/dist/quill.snow.css";
 import { Toaster } from "sonner";
 
 const lora = Lora({

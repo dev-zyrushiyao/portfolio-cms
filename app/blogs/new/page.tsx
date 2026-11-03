@@ -112,17 +112,27 @@ export default function NewBlog() {
         onSubmit={(e) => {
           if (!window.confirm("Are you sure you want to add this project?")) {
             e.preventDefault(); // Stops the form from submitting
+            toast.dismiss("loading-toast");
+            return;
           }
 
           //reset the editor
-          const editor = quillRef.current?.getEditor();
-          editor?.setText("");
+          // const editor = quillRef.current?.getEditor();
+          // editor?.setText("");
+
+          setContent("");
         }}
         className="flex flex-col gap-5"
       >
         <div className="flex flex-col gap-1">
           <label htmlFor="title-input">Title:</label>
-          <input type="text" id="title-input" name="title" maxLength={50} />
+          <input
+            required
+            type="text"
+            id="title-input"
+            name="title"
+            maxLength={50}
+          />
         </div>
         <div className="gap-1 hidden">
           <label htmlFor="context-input">Context:</label>
@@ -135,7 +145,7 @@ export default function NewBlog() {
         </div>
         <div className="flex flex-col gap-1">
           <label htmlFor="excerpt-input">Summary/Excerpt:</label>
-          <input type="text" id="excerpt-input" name="excerpt" />
+          <input required type="text" id="excerpt-input" name="excerpt" />
         </div>
 
         <div>
@@ -151,6 +161,7 @@ export default function NewBlog() {
 
         <div className="flex flex-row justify-end">
           <PrimaryButton
+            type="submit"
             label="Post blog"
             onClick={() => {
               toast.loading("Loading…", {
