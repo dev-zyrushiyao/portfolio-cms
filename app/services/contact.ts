@@ -14,7 +14,7 @@ export default async function getContacts(): Promise<ContactProp[] | []> {
   const { data, error } = await supabase
     .from("contact")
     .select("*")
-    .order("id", { ascending: true });
+    .order("id", { ascending: false });
 
   if (error) {
     throw new Error("Unable to fetch data from contact");
@@ -25,11 +25,11 @@ export default async function getContacts(): Promise<ContactProp[] | []> {
 
 export async function updateContactRead(
   id: number,
-  currentRead: boolean,
+  readStatus: boolean,
 ): Promise<void> {
   const { error } = await supabase
     .from("contact")
-    .update({ read: !currentRead })
+    .update({ read: readStatus })
     .eq("id", id);
 
   if (error) {

@@ -26,7 +26,9 @@ export default function Dashboard() {
   const [contactData, setContactData] = useState<ContactProp[]>([]);
 
   //currentState
-  const [selectedCategory, setSelectedCategory] = useState<number | null>(null);
+  const [selectedCategory, setSelectedCategory] = useState<
+    number | "all" | null
+  >("all");
   const filteredContacts = contactData.filter(
     (cont) => cont.category_id === selectedCategory,
   );
@@ -117,7 +119,7 @@ export default function Dashboard() {
     const newReadStatus = !selectedContact.read;
 
     //Update the database
-    await updateContactRead(selectedContact.id, selectedContact.read);
+    await updateContactRead(selectedContact.id, newReadStatus);
 
     //updates the state of contact (FilteredContact)
     setContactData((prevContacts) =>
@@ -129,6 +131,14 @@ export default function Dashboard() {
     //updates the mark as read button label
     setSelectedContact((prev) =>
       prev ? { ...prev, read: newReadStatus } : null,
+    );
+  }
+
+  if (loading) {
+    return (
+      <div className="p-8">
+        <h5>Loading....</h5>
+      </div>
     );
   }
 
@@ -147,13 +157,15 @@ export default function Dashboard() {
                 className="w-50 border rounded-sm p-2 bg-white"
                 defaultValue=""
                 onChange={(e) => {
-                  const categoryId = Number(e.currentTarget.value);
-                  setSelectedCategory(categoryId);
+                  if (e.currentTarget.value !== "all") {
+                    const categoryId = Number(e.currentTarget.value);
+                    setSelectedCategory(categoryId);
+                  } else {
+                    setSelectedCategory(e.currentTarget.value);
+                  }
                 }}
               >
-                <option value="" disabled>
-                  Select a categories
-                </option>
+                <option value="all">All</option>
                 {categoriesData &&
                   categoriesData?.map((cat) => {
                     return (
@@ -167,8 +179,33 @@ export default function Dashboard() {
             <div className="content-wrapper flex flex-row h-200 overflow-hidden">
               <div className="content-list w-100 bg-sky-100 p-5 overflow-y-scroll">
                 <ul className="contact-li flex flex-col gap-5">
-                  {filteredContacts.length !== 0 ? (
-                    filteredContacts.map((elem) => {
+                  {selectedCategory !== "all" ? (
+                    filteredContacts.length !== 0 ? (
+                      filteredContacts.map((elem) => {
+                        return (
+                          <li
+                            key={elem.id}
+                            className=" cursor-pointer"
+                            onClick={() => {
+                              setSelectedContact(elem);
+                            }}
+                            onMouseEnter={handleMouseEnterContact}
+                            onMouseLeave={handleMouseLeaveContact}
+                          >
+                            <div className="flex flex-row justify-between">
+                              {elem.subject.slice(0, 20)}.
+                              {elem.read && (
+                                <span className="font-semibold">(read)</span>
+                              )}
+                            </div>
+                          </li>
+                        );
+                      })
+                    ) : (
+                      <li>NO DATA</li>
+                    )
+                  ) : contactData.length !== 0 ? (
+                    contactData.map((elem) => {
                       return (
                         <li
                           key={elem.id}
@@ -201,6 +238,7 @@ export default function Dashboard() {
                         <h6>{selectedContact.subject}</h6>
 
                         <PrimaryButton
+                          type="button"
                           label={
                             selectedContact.read
                               ? "Mark it as  unread"
@@ -245,7 +283,7 @@ export default function Dashboard() {
                   </div>
                 ) : (
                   <div className="h-full bg-gray-100 flex flex-col justify-center items-center">
-                    <h6>NO DATA TO DISPLAY</h6>
+                    <h6>Select contact message</h6>
                   </div>
                 )}
               </div>

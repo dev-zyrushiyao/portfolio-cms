@@ -131,7 +131,7 @@ export default function Project() {
             </div>
 
             <Link href={"/projects/new"}>
-              <PrimaryButton label="Add Project" />
+              <PrimaryButton type="button" label="Add Project" />
             </Link>
           </div>
         </div>

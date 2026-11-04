@@ -136,7 +136,7 @@ export default function Blogs() {
             </div>
 
             <Link href={"/blogs/new"}>
-              <PrimaryButton label="Add Blog" />
+              <PrimaryButton type="button" label="Add Blog" />
             </Link>
           </div>
         </div>

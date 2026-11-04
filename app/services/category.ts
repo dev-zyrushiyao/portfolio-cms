@@ -16,4 +16,3 @@ export default async function getCategories(): Promise<CategoryProp[] | []> {
 
   return (data as CategoryProp[]) || [];
 }
-
