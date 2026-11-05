@@ -8,7 +8,7 @@ import supabase from "./supabase/client";
 import { slugify } from "./utils";
 
 export type TagProp = { name: string; icon_url: string };
-export type FormState = { success: boolean; message: string } | null; //state is return value from function and used by useActionState of form via Sonner Toast
+export type FormState = { success: boolean; message: string } | null; //state is (null) return value from function and used by useActionState of form via Sonner Toast
 export type ProjectProp = {
   id: string;
   title: string;

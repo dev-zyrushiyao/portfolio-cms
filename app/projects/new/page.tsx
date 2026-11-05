@@ -16,7 +16,7 @@ export default function NewProject() {
   const projectLink: string = "zyrushiyao-portfolio/projects";
   const [techstack, setTechstack] = useState<TechstackProp[] | null>(null);
 
-  //initial value is false
+  //initial value is null
   const [state, formAction] = useActionState(createProject, null);
 
   useEffect(() => {

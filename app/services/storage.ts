@@ -9,8 +9,6 @@ export interface TechstackProp {
   url: string;
 }
 
-const allowedTypes = ["image/png", "image/jpg", "image/webp"];
-
 //fetch techstack info and put it on checkbox
 export async function getStorageTechstackImageInfo() {
   const supabaseServer = await createClient();
@@ -92,6 +90,8 @@ export async function uploadBlogMediaToStorage(file: File) {
   const supabaseServer = await createClient();
   const blogImages: string = "blog-images";
 
+  const allowedTypes = ["image/png", "image/jpg", "image/webp"];
+
   //file type checker - accepts png and mp4
   if (!allowedTypes.includes(file.type)) {
     throw new Error("Unsupported media format");
@@ -122,6 +122,54 @@ export async function uploadBlogMediaToStorage(file: File) {
 
   const { data: fileData } = await supabaseServer.storage
     .from(blogImages)
+    .getPublicUrl(fileName);
+
+  console.log("URL", fileData.publicUrl);
+
+  return fileData.publicUrl;
+}
+
+export async function uploadPublicFilesToStorage(file: File) {
+  const supabaseServer = await createClient();
+  const personalFile: string = "personal-file";
+
+  const personalFileTypes = [
+    "image/png",
+    "image/jpeg",
+    "application/pdf",
+    "image/svg+xml",
+  ];
+
+  //file type checker
+  if (!personalFileTypes.includes(file.type)) {
+    throw new Error("Unsupported media format");
+  }
+
+  //file size maximum checker
+  const MAX_FILE_SIZE = 10 * 1024 * 1024;
+  if (file.size > MAX_FILE_SIZE) {
+    throw new Error("file must not exceed 10 MB.");
+  }
+
+  //file size mininum checker
+  if (file.size === 0) {
+    throw new Error("The uploaded file is empty.");
+  }
+
+  const sanitizedName = file.name.replace(/[^a-zA-Z0-9.-]/g, "-");
+  const fileName = `${uuidv4()}-${sanitizedName}`;
+
+  const { error } = await supabaseServer.storage
+    .from(personalFile)
+    .upload(fileName, file);
+
+  if (error) {
+    console.error("Error uploading image:", error.message);
+    throw new Error(`Error uploading image ${error.message}`);
+  }
+
+  const { data: fileData } = await supabaseServer.storage
+    .from(personalFile)
     .getPublicUrl(fileName);
 
   console.log("URL", fileData.publicUrl);
