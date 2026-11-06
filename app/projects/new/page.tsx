@@ -1,23 +1,20 @@
 "use client";
 
 import Link from "next/link";
-import React, { useActionState, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import { MdOutlineArrowBackIosNew } from "react-icons/md";
 
 import {
   getStorageTechstackImageInfo,
   TechstackProp,
 } from "../../services/storage";
-import { createProject } from "../../services/project";
+import { postProject } from "../../services/project";
 import { TagProp } from "../../services/project";
 import { toast } from "sonner";
 
 export default function NewProject() {
   const projectLink: string = "zyrushiyao-portfolio/projects";
   const [techstack, setTechstack] = useState<TechstackProp[] | null>(null);
-
-  //initial value is null
-  const [state, formAction] = useActionState(createProject, null);
 
   useEffect(() => {
     //fetch techstack for checkbox data
@@ -26,22 +23,7 @@ export default function NewProject() {
       setTechstack(data);
     }
     fetchImages();
-
-    if (state?.success) {
-      toast.success(state.message, {
-        action: {
-          label: "view",
-          onClick() {
-            window.open(projectLink, "_blank");
-          },
-        },
-      });
-      toast.dismiss("loading-toast");
-    } else if (state?.success === false) {
-      toast.error(`${state.message}`);
-      toast.dismiss("loading-toast");
-    }
-  }, [state]);
+  }, []);
 
   return (
     <div className="flex flex-col gap-10 p-20">
@@ -55,10 +37,39 @@ export default function NewProject() {
       </Link>
       <h5>Add Project</h5>
       <form
-        action={formAction}
-        onSubmit={(e) => {
-          if (!window.confirm("Are you sure you want to add this project?")) {
-            e.preventDefault(); // Stops the form from submitting
+        onSubmit={async (e) => {
+          e.preventDefault(); // Stops the form from submitting
+
+          const confirm = window.confirm(
+            "Are you sure you want to add this project?",
+          );
+          if (!confirm) {
+            return;
+          }
+
+          toast.loading("Loading…", {
+            id: "loading-toast",
+            className: "!bg-gray-100 !border-2 !border-gray-300",
+          });
+
+          const formElement = e.currentTarget;
+          const formData = new FormData(formElement);
+          const result = await postProject(formData);
+
+          if (result?.success) {
+            toast.success(result.message, {
+              action: {
+                label: "view",
+                onClick() {
+                  window.open(projectLink, "_blank");
+                },
+              },
+            });
+            formElement.reset();
+            toast.dismiss("loading-toast");
+          } else if (result?.success === false) {
+            toast.error(`${result.message}`);
+            toast.dismiss("loading-toast");
           }
         }}
         className="flex flex-col gap-5"
@@ -88,7 +99,6 @@ export default function NewProject() {
             id="description-desktop-label"
             cols={5}
             rows={5}
-            defaultValue={""}
             maxLength={500}
           ></textarea>
         </div>
@@ -104,7 +114,6 @@ export default function NewProject() {
             id="description-mobile-label"
             cols={5}
             rows={5}
-            defaultValue={""}
             maxLength={250}
           ></textarea>
         </div>
@@ -138,7 +147,6 @@ export default function NewProject() {
                 Demo URL:
               </label>
               <input
-                defaultValue={""}
                 type="text"
                 name="demo_url"
                 id="demo-label"
@@ -150,7 +158,6 @@ export default function NewProject() {
                 Documentation URL:
               </label>
               <input
-                defaultValue={""}
                 type="text"
                 name="documentation_url"
                 id="docu-label"
@@ -162,7 +169,6 @@ export default function NewProject() {
                 Prototype URL:
               </label>
               <input
-                defaultValue={""}
                 type="text"
                 name="prototype_url"
                 id="prototype-label"
@@ -174,7 +180,6 @@ export default function NewProject() {
                 Github URL:
               </label>
               <input
-                defaultValue={""}
                 type="text"
                 name="github_url"
                 id="github-label"
@@ -187,7 +192,6 @@ export default function NewProject() {
               <label>Project Photo</label>
               <div className="flex flex-col text-center">
                 <input
-                  required
                   name="image_url"
                   type="file"
                   accept="image/png"
@@ -197,16 +201,7 @@ export default function NewProject() {
             </div>
           </div>
         </div>
-        <button
-          type="submit"
-          className="bg-yellow-200 p-5 border rounded-xl"
-          onClick={() => {
-            toast.loading("Loading…", {
-              id: "loading-toast",
-              className: "!bg-gray-100 !border-2 !border-gray-300",
-            });
-          }}
-        >
+        <button type="submit" className="bg-yellow-200 p-5 border rounded-xl">
           Create new Project
         </button>
       </form>

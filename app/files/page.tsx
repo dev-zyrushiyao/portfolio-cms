@@ -7,13 +7,10 @@ import {
   deleteFileById,
   getAllPersonalFile,
   PersonalFileProp,
+  updateFileById,
 } from "../services/personal-file";
 import PrimaryButton from "../components/ui/PrimaryButton";
-import Image from "next/image";
-import SecondaryButton from "../components/ui/SecondaryButton";
-import { IoCloseCircle } from "react-icons/io5";
-
-const imageType: string[] = ["jpeg", "png", "svg+xml"];
+import FilesCard from "../components/ui/FilesCard";
 
 export default function FilePage() {
   const [personalFiles, setPersonalFiles] = useState<PersonalFileProp[] | []>(
@@ -29,15 +26,46 @@ export default function FilePage() {
     fetchFiles();
   }, []);
 
-  const personalList = personalFiles.filter(
-    (pf) => pf.category === "Personal File",
-  );
+  const personalList = personalFiles.filter((pf) => pf.category === "Personal");
 
-  const portfolioAsset = personalFiles.filter(
-    (pf) => pf.category === "Portfolio Asset",
-  );
+  const portfolioAsset = personalFiles.filter((pf) => pf.category === "Asset");
 
-  console.log("Test");
+  async function handleDelete(personalFile: PersonalFileProp) {
+    const confirm: boolean = window.confirm(
+      `Are you sure you want to delete ${personalFile.title.toUpperCase()} file?`,
+    );
+    if (!confirm) return;
+    await deleteFileById(personalFile.id);
+
+    //re-fetch to trigger re-render
+    const data = await getAllPersonalFile();
+    setPersonalFiles(data);
+  }
+
+  async function handleUpdate(personalFile: PersonalFileProp) {
+    await updateFileById(personalFile.id);
+
+    const data = await getAllPersonalFile();
+    setPersonalFiles(data);
+  }
+
+  async function handleDownload(personalFile: PersonalFileProp) {
+    try {
+      const response = await fetch(personalFile.link);
+      const blob = await response.blob();
+      const blobUrl = window.URL.createObjectURL(blob);
+      const link = document.createElement("a");
+      link.href = blobUrl;
+      link.download = `${personalFile.title}`;
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      console.error("Download failed:", error);
+    }
+  }
+
   return (
     <div className="flex flex-col gap-10 p-20">
       <Link href={"/dashboard"}>
@@ -64,71 +92,22 @@ export default function FilePage() {
               </div>
             ) : (
               <div className="flex flex-row gap-10 items-center flex-wrap">
-                {personalList.map((pf, index) => {
+                {personalList.toReversed().map((file) => {
                   return (
-                    <div key={pf.id} className="w-fit">
-                      <div className="delete-btn-wrapper relative left-66 top-4">
-                        <IoCloseCircle
-                          fill="red"
-                          size={30}
-                          title="Delete"
-                          cursor={"pointer"}
-                          onClick={async () => {
-                            const confirm: boolean = window.confirm(
-                              `Are you sure you want to delete ${pf.title.toUpperCase()} file?`,
-                            );
-
-                            if (!confirm) return;
-
-                            deleteFileById(pf.id);
-
-                            //re-fetch to trigger re-render
-                            const data = await getAllPersonalFile();
-                            setPersonalFiles(data);
-                          }}
-                        />
-                      </div>
-                      <div className="border-2 border-green-200 w-70 h-35 flex flex-col gap-5 justify-between p-3 rounded-sm bg-green-100 ">
-                        <p
-                          key={pf.title + index}
-                          title={pf.title}
-                          className="flex flex-row gap-3 justify-between items-center"
-                        >
-                          {pf.title.slice(0, 15)}
-                          {pf.title.length > 15 && "..."}
-                          <span className="bg-blue-200 rounded-sm p-2 h-fit w-fit flex flex-col justify-center items-center font-bold font-sans text-base">
-                            {pf.type.toLocaleUpperCase()}
-                          </span>
-                        </p>
-                        <div className="flex flex-row w-full gap-3 justify-center">
-                          <PrimaryButton
-                            label="Download"
-                            type="button"
-                            onClick={async () => {
-                              try {
-                                const response = await fetch(pf.link);
-                                const blob = await response.blob();
-                                const blobUrl =
-                                  window.URL.createObjectURL(blob);
-
-                                const link = document.createElement("a");
-                                link.href = blobUrl;
-                                link.download = `${pf.title}`;
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
-
-                                window.URL.revokeObjectURL(blobUrl);
-                              } catch (error) {
-                                console.error("Download failed:", error);
-                              }
-                            }}
-                          />
-
-                          <SecondaryButton label="Update" type="button" />
-                        </div>
-                      </div>
-                    </div>
+                    <FilesCard
+                      key={file.id}
+                      personalFileProp={file}
+                      displayImage={false}
+                      handleDelete={async () => {
+                        await handleDelete(file);
+                      }}
+                      handledownload={async () => {
+                        await handleDownload(file);
+                      }}
+                      handleUpdate={async () => {
+                        await handleUpdate(file);
+                      }}
+                    />
                   );
                 })}
               </div>
@@ -142,76 +121,22 @@ export default function FilePage() {
               </div>
             ) : (
               <div className="flex flex-row gap-10 flex-wrap">
-                {portfolioAsset.map((pf, index) => {
+                {portfolioAsset.toReversed().map((file) => {
                   return (
-                    <div key={pf.id} className="w-fit">
-                      <div className="delete-btn-wrapper relative left-66 top-4">
-                        <IoCloseCircle
-                          fill="red"
-                          size={30}
-                          title="Delete"
-                          cursor={"pointer"}
-                          onClick={async () => {
-                            const confirm: boolean = window.confirm(
-                              `Are you sure you want to delete ${pf.title.toUpperCase()} file?`,
-                            );
-
-                            if (!confirm) return;
-
-                            deleteFileById(pf.id);
-
-                            //re-fetch to trigger re-render
-                            const data = await getAllPersonalFile();
-                            setPersonalFiles(data);
-                          }}
-                        />
-                      </div>
-                      <div className="border-2 border-green-200 w-70 min-h-35 flex flex-col items-center gap-5 justify-between  p-3 rounded-sm bg-green-100 ">
-                        {imageType.includes(pf.type) && (
-                          <div className="w-50 h-50 relative ">
-                            <Image src={pf.link} alt="file image" fill />
-                          </div>
-                        )}
-                        <p
-                          key={pf.title + index}
-                          title={pf.title}
-                          className="flex flex-row gap-3 justify-between items-center"
-                        >
-                          {pf.title.slice(0, 15)}
-                          {pf.title.length > 15 && "..."}
-                          <span className="bg-blue-200 rounded-sm p-2 h-fit w-fit flex flex-col justify-center items-center font-bold font-sans text-base">
-                            {pf.type.toLocaleUpperCase()}
-                          </span>
-                        </p>
-                        <div className="flex flex-row gap-3 justify-center w-full">
-                          <PrimaryButton
-                            label="Download"
-                            type="button"
-                            onClick={async () => {
-                              try {
-                                const response = await fetch(pf.link);
-                                const blob = await response.blob();
-                                const blobUrl =
-                                  window.URL.createObjectURL(blob);
-
-                                const link = document.createElement("a");
-                                link.href = blobUrl;
-                                link.download = `${pf.title}`;
-                                document.body.appendChild(link);
-                                link.click();
-                                document.body.removeChild(link);
-
-                                window.URL.revokeObjectURL(blobUrl);
-                              } catch (error) {
-                                console.error("Download failed:", error);
-                              }
-                            }}
-                          />
-
-                          <SecondaryButton label="Update" type="button" />
-                        </div>
-                      </div>
-                    </div>
+                    <FilesCard
+                      key={file.id}
+                      personalFileProp={file}
+                      displayImage
+                      handleDelete={async () => {
+                        await handleDelete(file);
+                      }}
+                      handledownload={async () => {
+                        await handleDownload(file);
+                      }}
+                      handleUpdate={async () => {
+                        await handleUpdate(file);
+                      }}
+                    />
                   );
                 })}
               </div>

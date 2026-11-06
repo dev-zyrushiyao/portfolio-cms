@@ -3,7 +3,7 @@
 import { ProjectProp, TagProp, updateProject } from "@/app/services/project";
 import { TechstackProp } from "@/app/services/storage";
 import { useRouter } from "next/navigation";
-import React, { useActionState, useEffect } from "react";
+import React, { useActionState } from "react";
 import { toast } from "sonner";
 
 interface ProjectFormEdit {
@@ -16,8 +16,6 @@ export default function EditProjectForm({
   project,
   techstack,
 }: ProjectFormEdit) {
-  const [state, formAction] = useActionState(updateProject, null);
-
   const router = useRouter();
 
   // useEffect caching issues with state -> stucks at state.success this page is not accessible to the item a user recently update
@@ -42,11 +40,15 @@ export default function EditProjectForm({
 
   return (
     <form
-      action={formAction}
       className="flex flex-col gap-5"
       onSubmit={async (e) => {
-        if (!window.confirm("Are you sure you want to add this project?")) {
-          e.preventDefault(); // Stops the form from submitting
+        e.preventDefault(); // Stops the form from submitting
+
+        const confirm = window.confirm(
+          "Are you sure you want to add this project?",
+        );
+        if (!confirm) {
+          return;
         }
 
         //Notif loading this.state
@@ -57,7 +59,7 @@ export default function EditProjectForm({
 
         //init new Form and update new empty formData
         const formData = new FormData(e.currentTarget);
-        const result = await updateProject(null, formData);
+        const result = await updateProject(formData);
 
         toast.dismiss("loading-toast");
 

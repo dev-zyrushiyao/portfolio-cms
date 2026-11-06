@@ -3,24 +3,13 @@
 import ActionHeader from "@/app/components/ui/ActionHeader";
 import PrimaryButton from "@/app/components/ui/PrimaryButton";
 import { postFile } from "@/app/services/personal-file";
-import React, { useActionState, useEffect } from "react";
+
+import React from "react";
 import { toast } from "sonner";
 
-const fileSelection = ["Personal File", "Portfolio Asset"];
+const fileSelection = ["Personal", "Asset"];
 
 export default function NewFile() {
-  const [state, formAction] = useActionState(postFile, null);
-
-  useEffect(() => {
-    if (!state) return;
-
-    if (state?.success) {
-      toast.success(state.message);
-    } else {
-      toast.error(state?.message);
-    }
-  }, [state]);
-
   return (
     <main className="flex flex-col gap-10 p-20">
       <ActionHeader
@@ -33,7 +22,33 @@ export default function NewFile() {
           <h5>Upload</h5>
         </div>
 
-        <form action={formAction}>
+        <form
+          onSubmit={async (event) => {
+            event.preventDefault();
+
+            //raw <form>
+            const formElement = event.currentTarget;
+
+            //create a new Form with same inputs
+            const formData = new FormData(event.currentTarget);
+
+            //invoke the post method
+            const result = await postFile(formData);
+
+            try {
+              if (result?.success) {
+                toast.success(result.message);
+
+                // 2. Clear the file input and dropdown back to default
+                formElement.reset();
+              } else {
+                toast.error(result?.message || "Something went wrong");
+              }
+            } catch (error) {
+              toast.error(`An unexpected error occurred. ${error}`);
+            }
+          }}
+        >
           <div className="lg:h-full h-50 w-fit p-20 bg-gray-200 flex flex-col justify-center items-center gap-5">
             <label>Project Photo</label>
             <div className="flex flex-row items-center gap-5">

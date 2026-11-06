@@ -88,8 +88,6 @@ export default function Dashboard() {
   );
 
   function handleMouseEnterContact(e: React.MouseEvent): void {
-    console.log(e.currentTarget);
-
     //animation injection
     const context = contextSafe(() => {
       gsap.to(e.currentTarget, {
@@ -101,8 +99,6 @@ export default function Dashboard() {
   }
 
   function handleMouseLeaveContact(e: React.MouseEvent): void {
-    console.log(e.currentTarget);
-
     //animation injection
     const context = contextSafe(() => {
       gsap.to(e.currentTarget, {
@@ -155,12 +151,13 @@ export default function Dashboard() {
               <h5>Feedback</h5>
               <select
                 className="w-50 border rounded-sm p-2 bg-white"
-                defaultValue=""
                 onChange={(e) => {
                   if (e.currentTarget.value !== "all") {
                     const categoryId = Number(e.currentTarget.value);
+                    //value = 2 , 3 , 4 etc..
                     setSelectedCategory(categoryId);
                   } else {
+                    //value = all
                     setSelectedCategory(e.currentTarget.value);
                   }
                 }}

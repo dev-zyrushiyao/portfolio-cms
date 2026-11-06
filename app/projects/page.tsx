@@ -2,13 +2,19 @@
 
 import Link from "next/link";
 import React, { useEffect, useRef, useState } from "react";
-import { MdOutlineArrowBackIosNew } from "react-icons/md";
-import { getAllProjects, ProjectProp } from "../services/project";
+import { MdDeleteForever, MdOutlineArrowBackIosNew } from "react-icons/md";
+import {
+  deleteProjectById,
+  getAllProjects,
+  ProjectProp,
+  removeProjectPhotoById,
+} from "../services/project";
 import { MdEdit } from "react-icons/md";
 import { useGSAP } from "@gsap/react";
 import gsap from "gsap";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import { IoMdClose } from "react-icons/io";
+import { MdNoPhotography } from "react-icons/md";
 
 export default function Project() {
   //the whole list of projects
@@ -93,6 +99,38 @@ export default function Project() {
     { scope: container, dependencies: [currentProjects] },
   );
 
+  async function handleRemovePhoto(project: ProjectProp) {
+    const confirm = window.confirm(
+      `Are you sure you want to remove [${project.title}] photo?`,
+    );
+
+    if (!confirm) {
+      return;
+    }
+
+    //remove photo from the target id
+    await removeProjectPhotoById(project.id);
+
+    //refetch data and re-render new this.state
+    const data = await getAllProjects();
+    setProjectData(data);
+  }
+
+  async function handleDeleteProject(project: ProjectProp) {
+    const confirm = window.confirm(
+      `Are you sure you want to delete [${project.title}] blog?`,
+    );
+
+    if (!confirm) {
+      return;
+    }
+    await deleteProjectById(project.id);
+
+    //refetch data and re-render new this.state
+    const data = await getAllProjects();
+    setProjectData(data);
+  }
+
   return (
     <div className="flex flex-col gap-10 p-20">
       <Link href={"/dashboard"}>
@@ -137,18 +175,40 @@ export default function Project() {
         </div>
 
         <div ref={container} className="h-100 flex flex-col gap-4">
-          {currentProjects.map((proj) => {
+          {currentProjects.toReversed().map((proj) => {
             return (
               <div
                 key={proj.id}
                 className="project-item p-5 border border-gray-300 flex flex-row justify-between"
               >
                 {proj.title}
-                <Link href={`/projects/edit/${proj.id}`}>
-                  <span className="icon flex flex-row items-center gap-5">
-                    <MdEdit /> Edit
+                <div className="action-wrapper flex flex-row gap-20">
+                  <span
+                    className={`icon flex flex-row items-center gap-5 cursor-pointer ${!proj.image_url && "text-gray-300"}`}
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      handleRemovePhoto(proj);
+                    }}
+                  >
+                    <MdNoPhotography /> Remove photo
                   </span>
-                </Link>
+
+                  <Link href={`/projects/edit/${proj.id}`}>
+                    <span className="icon flex flex-row items-center gap-5">
+                      <MdEdit /> Edit
+                    </span>
+                  </Link>
+
+                  <span
+                    className="icon flex flex-row items-center gap-5 cursor-pointer"
+                    onClick={async (e) => {
+                      e.preventDefault();
+                      handleDeleteProject(proj);
+                    }}
+                  >
+                    <MdDeleteForever /> Delete
+                  </span>
+                </div>
               </div>
             );
           })}

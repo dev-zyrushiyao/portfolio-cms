@@ -1,10 +1,11 @@
 "use server";
 
 import { createClient } from "./supabase/server";
-import { uploadProjectImageToStorage } from "./storage";
-// import supabase from "./client";
+import {
+  deleteProjectImageFromStorage,
+  uploadProjectImageToStorage,
+} from "./storage";
 import { revalidatePath } from "next/cache";
-import supabase from "./supabase/client";
 import { slugify } from "./utils";
 
 export type TagProp = { name: string; icon_url: string };
@@ -14,7 +15,7 @@ export type ProjectProp = {
   title: string;
   description_desktop: string;
   description_mobile: string;
-  image_url: string;
+  image_url: string | null;
   demo_url: string;
   documentation_url: string;
   prototype_url: string;
@@ -24,7 +25,7 @@ export type ProjectProp = {
 };
 
 //initial value is false (for useActionState)
-export async function createProject(prevState: FormState, formData: FormData) {
+export async function postProject(formData: FormData) {
   const supabaseServer = await createClient();
 
   const title = formData.get("title");
@@ -49,7 +50,7 @@ export async function createProject(prevState: FormState, formData: FormData) {
   }
 
   // Strictly check the file type
-  if (image_file.type !== "image/png") {
+  if (image_file.size !== 0 && image_file.type !== "image/png") {
     return {
       success: false,
       message: `Error: ${image_file.type} is not a valid file`,
@@ -57,7 +58,10 @@ export async function createProject(prevState: FormState, formData: FormData) {
   }
 
   //upload image to storage that returns a image URL to be uploaded in the Database
-  const image_url = await uploadProjectImageToStorage(image_file);
+  const image_url =
+    image_file.size === 0
+      ? null
+      : await uploadProjectImageToStorage(image_file);
 
   //unpacks the JSON value from the checkbox
   const unpackedTags: TagProp[] = tags.map((t) => JSON.parse(t));
@@ -66,7 +70,7 @@ export async function createProject(prevState: FormState, formData: FormData) {
     title,
     description_desktop,
     description_mobile,
-    image_url: image_url,
+    image_url,
     demo_url: demo_url === "" ? null : demo_url,
     documentation_url: documentation_url === "" ? null : documentation_url,
     prototype_url: prototype_url === "" ? null : prototype_url,
@@ -93,7 +97,9 @@ export async function createProject(prevState: FormState, formData: FormData) {
 }
 
 export async function getAllProjects(): Promise<ProjectProp[] | []> {
-  const { data, error } = await supabase
+  const supabaseServer = await createClient();
+
+  const { data, error } = await supabaseServer
     .from("projects")
     .select("*")
     .order("id", { ascending: true });
@@ -120,10 +126,7 @@ export async function getProjectById(id: string): Promise<ProjectProp> {
   return data as ProjectProp;
 }
 
-export async function updateProject(
-  prevState: FormState,
-  formData: FormData,
-): Promise<FormState> {
+export async function updateProject(formData: FormData): Promise<FormState> {
   const supabaseServer = await createClient();
 
   const id = formData.get("id"); // hidden
@@ -138,7 +141,7 @@ export async function updateProject(
   const slug = await slugify(title as string);
 
   //input upload
-  const image_file = formData.get("image_url") as File | null;
+  const image_file = formData.get("image_url") as File;
 
   //fetch image url from ID
   const { data: existingProject, error: fetchError } = await supabaseServer
@@ -154,6 +157,7 @@ export async function updateProject(
     };
   }
 
+  //if no new file uploaded it uses the current image_url on update
   let image_url = existingProject.image_url;
 
   // Handle missing image file so the function always returns a FormState
@@ -171,7 +175,7 @@ export async function updateProject(
         message: `Error: ${image_file.type} is not a valid file`,
       } as FormState;
     }
-    //upload image to storage that returns a image URL to be uploaded in the Database
+    //upload image to storage that returns a new image URL to be uploaded in the Database
     image_url = await uploadProjectImageToStorage(image_file);
   }
 
@@ -184,7 +188,7 @@ export async function updateProject(
       title,
       description_desktop,
       description_mobile,
-      image_url: image_url,
+      image_url,
       demo_url: demo_url === "" ? null : demo_url,
       documentation_url: documentation_url === "" ? null : documentation_url,
       prototype_url: prototype_url === "" ? null : prototype_url,
@@ -212,6 +216,35 @@ export async function updateProject(
   } as FormState;
 }
 
+export async function removeProjectPhotoById(id: string) {
+  const projectFile = await getProjectById(id);
+
+  console.log("Image URL", projectFile.image_url);
+
+  try {
+    //if image_url has value - delete the image from storage
+    if (projectFile.image_url) {
+      //get the filePath of projectFile
+      const filePath = projectFile.image_url.split("/project-images/")[1];
+      console.log("filePath", filePath);
+      //delete the ProjectImage from storage bucket
+      await deleteProjectImageFromStorage(filePath);
+
+      const supabaseServer = await createClient();
+      const { error } = await supabaseServer
+        .from("projects")
+        .update({ image_url: null })
+        .eq("id", id);
+
+      if (error) {
+        throw new Error(`Error: ${error.message}`);
+      }
+    }
+  } catch (e) {
+    console.log(e);
+  }
+}
+
 export async function searchProjectByTitle(
   title: string,
 ): Promise<ProjectProp | null> {
@@ -232,4 +265,32 @@ export async function searchProjectByTitle(
   }
 
   return data;
+}
+
+export async function deleteProjectById(id: string) {
+  //get the project file
+  const projectFile = await getProjectById(id);
+
+  try {
+    //if image_url has value - delete the image from storage
+    if (projectFile.image_url) {
+      //get the filePath of projectFile
+      const filePath = projectFile.image_url.split("/project-images/")[1];
+      //delete the ProjectImage from storage bucket
+      await deleteProjectImageFromStorage(filePath);
+    }
+
+    //delete the project file from the database
+    const supabaseServer = await createClient();
+    const { error } = await supabaseServer
+      .from("projects")
+      .delete()
+      .eq("id", id);
+
+    if (error) {
+      throw new Error(`Error ${error.message}`);
+    }
+  } catch (e) {
+    console.log(e);
+  }
 }

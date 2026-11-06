@@ -9,6 +9,8 @@ export interface TechstackProp {
   url: string;
 }
 
+const storageBucket = { personalFile: "personal-file" };
+
 //fetch techstack info and put it on checkbox
 export async function getStorageTechstackImageInfo() {
   const supabaseServer = await createClient();
@@ -86,6 +88,19 @@ export async function uploadProjectImageToStorage(file: File) {
   return fileData.publicUrl;
 }
 
+export async function deleteProjectImageFromStorage(filePath: string) {
+  const supabaseServer = await createClient();
+
+  const { error } = await supabaseServer.storage
+    .from("project-images")
+    .remove([filePath]);
+
+  if (error) {
+    //failed to delete a project image from storage
+    throw new Error(`Error: ${error.message}`);
+  }
+}
+
 export async function uploadBlogMediaToStorage(file: File) {
   const supabaseServer = await createClient();
   const blogImages: string = "blog-images";
@@ -131,7 +146,6 @@ export async function uploadBlogMediaToStorage(file: File) {
 
 export async function uploadPublicFilesToStorage(file: File) {
   const supabaseServer = await createClient();
-  const personalFile: string = "personal-file";
 
   const personalFileTypes = [
     "image/png",
@@ -160,7 +174,7 @@ export async function uploadPublicFilesToStorage(file: File) {
   const fileName = `${uuidv4()}-${sanitizedName}`;
 
   const { error } = await supabaseServer.storage
-    .from(personalFile)
+    .from(storageBucket.personalFile)
     .upload(fileName, file);
 
   if (error) {
@@ -169,10 +183,22 @@ export async function uploadPublicFilesToStorage(file: File) {
   }
 
   const { data: fileData } = await supabaseServer.storage
-    .from(personalFile)
+    .from(storageBucket.personalFile)
     .getPublicUrl(fileName);
 
-  console.log("URL", fileData.publicUrl);
-
   return fileData.publicUrl;
+}
+
+export async function deleteFilesFromStorage(filePath: string) {
+  const supabaseServer = await createClient();
+
+  console.log("Delete files From storage");
+
+  const { error } = await supabaseServer.storage
+    .from(storageBucket.personalFile)
+    .remove([filePath]);
+
+  if (error) {
+    throw new Error(`Unable to delete ${filePath} from the database`);
+  }
 }
