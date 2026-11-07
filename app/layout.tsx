@@ -3,6 +3,8 @@ import { Google_Sans_Flex, Lora } from "next/font/google";
 import "./globals.css";
 import "react-quill-new/dist/quill.snow.css";
 import { Toaster } from "sonner";
+import { redirect } from "next/navigation";
+import { createClient } from "./services/supabase/server";
 
 const lora = Lora({
   variable: "--font-lora-serif",
@@ -27,7 +29,7 @@ export const metadata: Metadata = {
   },
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
