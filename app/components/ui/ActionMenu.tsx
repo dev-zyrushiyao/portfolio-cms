@@ -22,11 +22,11 @@ export default function ActionMenu() {
               <p>View Projects</p>
             </Link>
           </li>
-          <li>
+          {/* <li>
             <Link href={"/techstacks"}>
               <p>View Techstack</p>
             </Link>
-          </li>
+          </li> */}
         </ul>
       </div>
     </div>

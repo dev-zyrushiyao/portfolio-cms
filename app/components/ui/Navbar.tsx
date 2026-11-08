@@ -1,14 +1,35 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 
 import { MdLogout } from "react-icons/md";
-import { User } from "@supabase/supabase-js";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import supabase from "../../services/supabase/client";
 import Link from "next/link";
 
-export default function Navbar({ loggedUser }: { loggedUser: User | null }) {
+import { User } from "@supabase/supabase-js";
+import supabaseClient from "../../services/supabase/client";
+
+export default function Navbar() {
   const router = useRouter();
+
+  const [loggedUser, setLoggedUser] = useState<User | null>(null);
+
+  useEffect(() => {
+    async function getLoggedUser() {
+      const {
+        data: { user },
+        error,
+      } = await supabaseClient.auth.getUser();
+
+      if (!user || error) {
+        router.push("/");
+      }
+
+      setLoggedUser(user);
+    }
+
+    getLoggedUser();
+  }, [router]);
 
   async function handleLogout() {
     await supabase.auth.signOut({ scope: "local" });

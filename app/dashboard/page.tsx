@@ -1,9 +1,7 @@
 "use client";
 
 import React, { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
-import supabase from "../services/supabase/client";
-import { User } from "@supabase/supabase-js";
+
 import Navbar from "../components/ui/Navbar";
 import PrimaryButton from "../components/ui/PrimaryButton";
 import { useGSAP } from "@gsap/react";
@@ -17,11 +15,6 @@ import ActionMenu from "../components/ui/ActionMenu";
 import { convertDate } from "../services/utils";
 
 export default function Dashboard() {
-  const router = useRouter();
-  const [loading, setLoading] = useState<boolean>(true);
-
-  //fetched data
-  const [loggedUser, setLoggedUser] = useState<User | null>(null);
   const [categoriesData, setCategoriesData] = useState<CategoryProp[]>([]);
   const [contactData, setContactData] = useState<ContactProp[]>([]);
 
@@ -37,16 +30,6 @@ export default function Dashboard() {
   );
 
   useEffect(() => {
-    supabase.auth.getUser().then(({ data: { user }, error }) => {
-      if (!user || error) {
-        // Redirect back to home/login if not authenticated
-        router.push("/");
-      } else {
-        setLoggedUser(user);
-        setLoading(false);
-      }
-    });
-
     async function fetchCategories(): Promise<void> {
       const data = await getCategories();
       setCategoriesData(data);
@@ -58,7 +41,7 @@ export default function Dashboard() {
       setContactData(data);
     }
     fetchContact();
-  }, [router]);
+  }, []);
 
   //animation
   const container = useRef<HTMLDivElement>(null);
@@ -130,17 +113,9 @@ export default function Dashboard() {
     );
   }
 
-  if (loading) {
-    return (
-      <div className="p-8">
-        <h5>Loading....</h5>
-      </div>
-    );
-  }
-
   return (
     <div className="p-8">
-      <Navbar loggedUser={loggedUser} />
+      <Navbar />
       <div ref={container} className="wrapper flex flex-row p-5 gap-20">
         <div className="left-wrapper w-100 h-fit bg-gray-200 rounded-xl ">
           <ActionMenu />

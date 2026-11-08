@@ -1,8 +1,8 @@
-import { createServerClient } from "@supabase/ssr";
 import { NextResponse, NextRequest } from "next/server";
+import { createClient } from "./app/services/supabase/server";
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
+  const response = NextResponse.next({
     request,
   });
 
@@ -13,30 +13,11 @@ export async function middleware(request: NextRequest) {
     throw new Error("Missing Supabase environment variables in .env.local");
   }
 
-  const supabase = createServerClient(url, key, {
-    cookies: {
-      getAll() {
-        return request.cookies.getAll();
-      },
-      setAll(cookiesToSet) {
-        cookiesToSet.forEach(({ name, value }) =>
-          request.cookies.set(name, value),
-        );
-
-        response = NextResponse.next({
-          request,
-        });
-
-        cookiesToSet.forEach(({ name, value, options }) =>
-          response.cookies.set(name, value, options),
-        );
-      },
-    },
-  });
+  const supabaseServer = await createClient();
 
   const {
     data: { user },
-  } = await supabase.auth.getUser();
+  } = await supabaseServer.auth.getUser();
 
   if (!user) {
     const url = request.nextUrl.clone();
