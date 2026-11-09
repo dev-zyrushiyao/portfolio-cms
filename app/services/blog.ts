@@ -100,7 +100,14 @@ export async function updateBlog(
 
   const { error } = await supabaseServer
     .from(blogTable)
-    .update({ title, context, excerpt, slug, user_id: user.uid })
+    .update({
+      title,
+      context,
+      excerpt,
+      slug,
+      updated_at: new Date().toISOString(),
+      user_id: user.uid,
+    })
     .eq("id", id);
 
   if (error) {
