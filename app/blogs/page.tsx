@@ -146,19 +146,23 @@ export default function Blogs() {
             return (
               <div
                 key={blog.id}
-                className="blog-item p-5 border border-gray-300 flex flex-row justify-between"
+                className="blog-item p-5 border border-gray-300 flex flex-row items-center justify-between"
                 onMouseEnter={handleMouseEnter}
                 onMouseLeave={handleMouseLeave}
               >
                 {blog.title}
-                <div className="action-wrapper flex flex-row gap-20">
+                <div className="action-wrapper flex flex-row items-center lg:gap-20 md:gap-14 gap-7">
                   <Link href={`/blogs/edit/${blog.id}`}>
-                    <span className="icon flex flex-row items-center gap-5">
-                      <MdEdit /> Edit
-                    </span>
+                    <button
+                      className="icon flex flex-row items-center gap-5"
+                      title="edit"
+                    >
+                      <MdEdit /> <p className="lg:block hidden">edit</p>
+                    </button>
                   </Link>
-                  <span
+                  <button
                     className="icon flex flex-row items-center gap-5 cursor-pointer"
+                    title="delete"
                     defaultValue={blog.id}
                     onClick={(e) => {
                       if (
@@ -172,8 +176,9 @@ export default function Blogs() {
                       }
                     }}
                   >
-                    <MdDeleteForever /> Delete
-                  </span>
+                    <MdDeleteForever />
+                    <p className="lg:block hidden">Delete</p>
+                  </button>
                 </div>
               </div>
             );

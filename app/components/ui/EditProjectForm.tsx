@@ -11,7 +11,7 @@ interface ProjectFormEdit {
   techstack: TechstackProp[];
 }
 
-const projectLink: string = "zyrushiyao-portfolio/projects";
+const projectLink: string = "https://zyrushiyao.vercel.app/projects";
 export default function EditProjectForm({
   project,
   techstack,

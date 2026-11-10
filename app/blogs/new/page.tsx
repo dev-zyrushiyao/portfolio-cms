@@ -80,7 +80,7 @@ export default function NewBlog() {
 
   const [state, formAction] = useActionState(postBlog, null);
   useEffect(() => {
-    const blogLink: string = `https://zyrushiyao-portfolio.com/blogs/`;
+    const blogLink: string = `https://zyrushiyao.vercel.app/blog`;
     if (state?.success) {
       toast.success(state.message, {
         action: {

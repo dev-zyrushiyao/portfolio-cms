@@ -19,6 +19,7 @@ import { MdNoPhotography } from "react-icons/md";
 export default function Project() {
   //the whole list of projects
   const [projectData, setProjectData] = useState<ProjectProp[]>([]);
+  const [isLoading, setIsLoading] = useState<boolean>(true);
 
   //state - pagination
   const [currentPage, setCurrentPage] = useState(1);
@@ -53,6 +54,7 @@ export default function Project() {
     async function fetchProjects(): Promise<void> {
       const data = await getAllProjects();
       setProjectData(data);
+      setIsLoading(false);
     }
     fetchProjects();
   }, []);
@@ -60,11 +62,14 @@ export default function Project() {
   const container = useRef<HTMLDivElement | null>(null);
   useGSAP(
     () => {
+      if (isLoading) return;
+
       const projectItem = gsap.utils.toArray<HTMLDivElement>(
         ".project-item",
         container.current,
       );
 
+      //pre-code
       const cleanups: (() => void)[] = [];
 
       projectItem.forEach((item) => {
@@ -144,7 +149,7 @@ export default function Project() {
       <div className="flex flex-col gap-5">
         <div className="flex lg:flex-row flex-col justify-between">
           <h5>Project List</h5>
-          <div className="wrapper flex flex-row gap-5 items-center">
+          <div className="wrapper flex flex-row gap-5 justify-around items-center">
             <div className="search-wrapper p-2 flex flex-row gap-3 items-center border border-gray-500 rounded-sm">
               <input
                 type="text"
@@ -182,32 +187,43 @@ export default function Project() {
                 className="project-item p-5 border border-gray-300 flex flex-row justify-between"
               >
                 {proj.title}
-                <div className="action-wrapper flex flex-row gap-20">
-                  <span
-                    className={`icon flex flex-row items-center gap-5 cursor-pointer ${!proj.image_url && "text-gray-300"}`}
+                <div className="action-wrapper flex flex-row justify-evenly items-center lg:gap-20 md:gap-14 gap-7">
+                  <button
+                    type="button"
+                    title="remove photo"
+                    disabled={proj.image_url === null}
+                    className={`icon flex flex-row justify-center items-center gap-5 ${proj.image_url === null ? "cursor-default text-gray-300" : `cursor-pointer text-black`}`}
                     onClick={async (e) => {
                       e.preventDefault();
                       handleRemovePhoto(proj);
                     }}
                   >
-                    <MdNoPhotography /> Remove photo
-                  </span>
+                    <MdNoPhotography />
+                    <p className="lg:block hidden">Remove photo</p>
+                  </button>
 
                   <Link href={`/projects/edit/${proj.id}`}>
-                    <span className="icon flex flex-row items-center gap-5">
-                      <MdEdit /> Edit
-                    </span>
+                    <button
+                      type="button"
+                      title="edit"
+                      className="icon flex flex-row justify-center items-center gap-5 cursor-pointer"
+                    >
+                      <MdEdit />
+                      <p className="lg:block hidden">Edit</p>
+                    </button>
                   </Link>
 
-                  <span
-                    className="icon flex flex-row items-center gap-5 cursor-pointer"
+                  <button
+                    className="icon flex flex-row justify-center items-center gap-5 cursor-pointer"
+                    title="Delete"
                     onClick={async (e) => {
                       e.preventDefault();
                       handleDeleteProject(proj);
                     }}
                   >
-                    <MdDeleteForever /> Delete
-                  </span>
+                    <MdDeleteForever />{" "}
+                    <p className="lg:block hidden">Delete</p>
+                  </button>
                 </div>
               </div>
             );

@@ -27,7 +27,7 @@ export default function EditBlogForm({ blog }: EditBlogFormProps) {
   const [content, setContent] = useState<string>(blog.context);
   const quillRef = useRef<ReactQuillInstance | null>(null);
   const [state, formAction] = useActionState(updateBlog, null);
-  const blogLink: string = `https://zyrushiyao-portfolio.com/blogs/`;
+  const blogLink: string = `https://zyrushiyao.vercel.app/blog`;
   const router = useRouter();
 
   const modules = {

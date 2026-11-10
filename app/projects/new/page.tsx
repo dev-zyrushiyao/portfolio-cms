@@ -13,7 +13,7 @@ import { TagProp } from "../../services/project";
 import { toast } from "sonner";
 
 export default function NewProject() {
-  const projectLink: string = "zyrushiyao-portfolio/projects";
+  const projectLink: string = "https://zyrushiyao.vercel.app/projects";
   const [techstack, setTechstack] = useState<TechstackProp[] | null>(null);
 
   useEffect(() => {

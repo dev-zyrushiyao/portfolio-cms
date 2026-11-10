@@ -116,7 +116,10 @@ export default function Dashboard() {
   return (
     <div className="p-8">
       <Navbar />
-      <div ref={container} className="wrapper flex flex-row p-5 gap-20">
+      <div
+        ref={container}
+        className="wrapper flex lg:flex-row flex-col p-5 gap-20"
+      >
         <div className="left-wrapper w-100 h-fit bg-gray-200 rounded-xl ">
           <ActionMenu />
         </div>
