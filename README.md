@@ -1,3 +1,20 @@
+# Zyrus Hiyao Portfolio
+
+Created using React , Typescript , NextJs , Gsap , Figma , Supabase and OAuth
+
+The portfolio fetch files from my supabase then display it on the page, this way I add projects systematically. Super Mario Theme banner is made using Figma and animated using GSAP 3. the portfolio data is managed by a custom CMS: https://github.com/dev-zyrushiyao/portfolio-cms - https://zyrushiyao-cms.vercel.app/
+
+this project is deployed in Vercel https://zyrushiyao.vercel.app/
+
+install gsap:
+
+> npm install gsap
+> npm install @gsap/react
+
+install react-icon
+
+> npm i react-icons
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
